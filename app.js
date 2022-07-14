@@ -50,8 +50,14 @@ app.post("/login", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-        if (foundUser.password === password) {
-          res.render("secrets");
+        if (foundUser) {
+          if (foundUser.password === password) {
+            res.render("secrets");
+          } else {
+            res.send("Wrong fucking password!");
+          }
+        } else {
+          res.send("The username doesn't fucking exist!");
         }
       }
   });
