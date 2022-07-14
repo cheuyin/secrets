@@ -9,6 +9,13 @@ app.use(express.urlencoded({extended: true}));
 
 mongoose.connect("mongodb://localhost:27017/userDB");
 
+const userSchema = {
+  email: String,
+  password: String
+};
+
+const User = new mongoose.model("User", userSchema);
+
 app.get("/", (req, res) => {
   res.render("home");
 });
