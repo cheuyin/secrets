@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
@@ -6,7 +7,7 @@ const app = express();
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect("mongodb://localhost:27017/userDB");
 
@@ -15,9 +16,10 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 
-const secret = "Thisisourlittlesecret";
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ["password"]});
-
+userSchema.plugin(encrypt, {
+  secret: process.env.SECRET,
+  encryptedFields: ["password"]
+});
 
 const User = new mongoose.model("User", userSchema);
 
@@ -51,20 +53,20 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  User.findOne({email: username}, (err, foundUser) => {
+  User.findOne({ email: username }, (err, foundUser) => {
     if (err) {
       console.log(err);
     } else {
-        if (foundUser) {
-          if (foundUser.password === password) {
-            res.render("secrets");
-          } else {
-            res.send("Wrong fucking password!");
-          }
+      if (foundUser) {
+        if (foundUser.password === password) {
+          res.render("secrets");
         } else {
-          res.send("The username doesn't fucking exist!");
+          res.send("Wrong fucking password!");
         }
+      } else {
+        res.send("The username doesn't fucking exist!");
       }
+    }
   });
 });
 
